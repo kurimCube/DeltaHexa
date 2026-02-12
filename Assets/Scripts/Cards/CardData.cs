@@ -10,7 +10,7 @@ public class CardData : ScriptableObject
 {
     public string cardName;
     public Sprite icon;
-    
+
     // Phase2以降で追加予定
     // public int power;
     // public string cardShape;

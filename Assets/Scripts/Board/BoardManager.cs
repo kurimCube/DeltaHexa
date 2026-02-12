@@ -11,7 +11,7 @@ using System.Collections.Generic;
 public class BoardManager : MonoBehaviour
 {
     private Dictionary<Vector2Int, Cell> cells = new Dictionary<Vector2Int, Cell>();
-    
+
     [SerializeField] private GameObject cellPrefab;
     [SerializeField] private Transform boardRoot;
 
