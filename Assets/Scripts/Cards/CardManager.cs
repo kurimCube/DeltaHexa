@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+
 /// <summary>
 /// カード管理（Phase1）
 /// - 手札生成
@@ -39,7 +40,7 @@ public class CardManager : MonoBehaviour
     /// <summary>
     /// 選択中のカードを配置
     /// </summary>
-    public bool UseSelectedCard(Vector2Int coord)
+    public bool UseSelectedCard(TriangleCoord coord)
     {
         if (selectedCard == null || boardManager == null)
             return false;

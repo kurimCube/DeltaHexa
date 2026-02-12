@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+
 /// <summary>
 /// 三角形グリッド座標ユーティリティ
 /// Axial座標システムを管理
@@ -74,5 +75,43 @@ public static class CellCoordinateUtility
         int yi = Mathf.RoundToInt(yf);
 
         return new Vector2Int(xi, yi);
+    }
+
+    /// <summary>
+    /// TriangleCoord 用のオーバーロード
+    /// </summary>
+    public static bool IsValidCoordinate(TriangleCoord coord)
+    {
+        return IsValidCoordinate(coord.Pos);
+    }
+
+    public static List<TriangleCoord> GenerateAllValidTriangleCoordinates()
+    {
+        List<TriangleCoord> list = new List<TriangleCoord>();
+        for (int x = -4; x <= 4; x++)
+        {
+            for (int y = -4; y <= 4; y++)
+            {
+                Vector2Int v = new Vector2Int(x, y);
+                if (IsValidCoordinate(v))
+                {
+                    bool isUp = (x + y) % 2 == 0;
+                    list.Add(new TriangleCoord(v, isUp));
+                }
+            }
+        }
+        return list;
+    }
+
+    public static Vector3 CoordinateToWorldPosition(TriangleCoord coord, float cellSize = 1.0f)
+    {
+        return CoordinateToWorldPosition(coord.Pos, cellSize);
+    }
+
+    public static TriangleCoord WorldPositionToTriangleCoordinate(Vector3 worldPos, float cellSize = 1.0f)
+    {
+        Vector2Int v = WorldPositionToCoordinate(worldPos, cellSize);
+        bool isUp = (v.x + v.y) % 2 == 0;
+        return new TriangleCoord(v, isUp);
     }
 }

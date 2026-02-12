@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 /// <summary>
 /// セルデータ構造（Phase1最小構成）
 /// - 座標
@@ -9,11 +10,11 @@ using UnityEngine;
 /// </summary>
 public class Cell
 {
-    public Vector2Int coordinate;
+    public TriangleCoord coordinate;
     public bool isOccupied;
     public CardInstance placedCard;
 
-    public Cell(Vector2Int coord)
+    public Cell(TriangleCoord coord)
     {
         coordinate = coord;
         isOccupied = false;

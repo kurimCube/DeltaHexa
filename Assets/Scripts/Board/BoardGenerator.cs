@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+
 /// <summary>
 /// 24セル生成処理
 /// </summary>
@@ -20,7 +21,8 @@ public class BoardGenerator : MonoBehaviour
         {
             for (int x = 0; x < width; x++)
             {
-                Vector2Int position = new Vector2Int(x, y);
+                bool isUp = (x + y) % 2 == 0;
+                TriangleCoord position = new TriangleCoord(x, y, isUp);
                 Cell cell = new Cell(position);
                 generatedCells.Add(cell);
             }

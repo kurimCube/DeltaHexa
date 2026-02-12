@@ -10,7 +10,7 @@ using System.Collections.Generic;
 /// </summary>
 public class BoardManager : MonoBehaviour
 {
-    private Dictionary<Vector2Int, Cell> cells = new Dictionary<Vector2Int, Cell>();
+    private Dictionary<TriangleCoord, Cell> cells = new Dictionary<TriangleCoord, Cell>();
 
     [SerializeField] private GameObject cellPrefab;
     [SerializeField] private Transform boardRoot;
@@ -32,8 +32,8 @@ public class BoardManager : MonoBehaviour
         foreach (TriangleCoord coord in coordinates)
         {
             // TriangleCoord の Pos をキーにして Cell を作成・格納する
-            Cell cell = new Cell(coord.Pos);
-            cells[coord.Pos] = cell;
+            Cell cell = new Cell(coord);
+            cells[coord] = cell;
 
             // CellView生成（Prefabからインスタンス化）
             if (cellPrefab != null && boardRoot != null)
@@ -55,45 +55,17 @@ public class BoardManager : MonoBehaviour
     /// </summary>
     public List<TriangleCoord> GenerateTriangleCoordinates()
     {
-        List<TriangleCoord> result = new List<TriangleCoord>();
-
-        int size = 2;
-
-        for (int y = -size; y < size; y++)
-        {
-            int minX = Mathf.Max(-size, -y - size);
-            int maxX = Mathf.Min(size - 1, -y + size - 1);
-
-            for (int x = minX; x <= maxX; x++)
-            {
-                bool isUp = (x + y) % 2 == 0;
-                result.Add(new TriangleCoord(x, y, isUp));
-            }
-        }
-
+        // CellCoordinateUtility の定義に合わせて有効座標を全件取得する
+        List<TriangleCoord> result = CellCoordinateUtility.GenerateAllValidTriangleCoordinates();
         Debug.Log("Triangle count: " + result.Count);
         return result;
     }
 
-    /// <summary>
-    /// 三角形座標の向きと位置
-    /// </summary>
-    public struct TriangleCoord
-    {
-        public Vector2Int Pos;
-        public bool IsUp;
-
-        public TriangleCoord(int x, int y, bool isUp)
-        {
-            Pos = new Vector2Int(x, y);
-            IsUp = isUp;
-        }
-    }
-
+    // TriangleCoord is defined in Core/TriangleCoord.cs
     /// <summary>
     /// 配置可能判定
     /// </summary>
-    public bool CanPlace(Vector2Int coord)
+    public bool CanPlace(TriangleCoord coord)
     {
         return cells.ContainsKey(coord) && !cells[coord].isOccupied;
     }
@@ -101,7 +73,7 @@ public class BoardManager : MonoBehaviour
     /// <summary>
     /// カード配置
     /// </summary>
-    public bool PlaceCard(Vector2Int coord, CardInstance card)
+    public bool PlaceCard(TriangleCoord coord, CardInstance card)
     {
         if (!CanPlace(coord))
             return false;
@@ -114,7 +86,7 @@ public class BoardManager : MonoBehaviour
     /// <summary>
     /// セル取得
     /// </summary>
-    public Cell GetCell(Vector2Int coord)
+    public Cell GetCell(TriangleCoord coord)
     {
         return cells.ContainsKey(coord) ? cells[coord] : null;
     }
