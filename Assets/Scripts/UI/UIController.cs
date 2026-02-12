@@ -1,21 +1,18 @@
 using UnityEngine;
 
 /// <summary>
-/// UI全体制御
+/// UI全体制御（Phase1最小構成）
 /// </summary>
 public class UIController : MonoBehaviour
 {
     [SerializeField] private HandView handView;
-    [SerializeField] private HPBarView playerHPBar;
-    [SerializeField] private HPBarView enemyHPBar;
+    [SerializeField] private CardManager cardManager;
 
-    private void Start()
+    public void Initialize()
     {
-        // UI初期化
-    }
-
-    public void UpdateUI()
-    {
-        // UI更新
+        if (handView != null && cardManager != null)
+        {
+            handView.Initialize();
+        }
     }
 }

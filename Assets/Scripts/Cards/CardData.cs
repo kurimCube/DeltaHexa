@@ -1,18 +1,18 @@
 using UnityEngine;
 
 /// <summary>
-/// ScriptableObject
-/// カード定義データ
+/// ScriptableObject - カード定義データ（Phase1簡易版）
 /// - 名前
-/// - 形状
-/// - 属性
-/// - 基礎威力
+/// - アイコン
 /// </summary>
 [CreateAssetMenu(fileName = "New Card Data", menuName = "DeltaHexa/Card Data")]
 public class CardData : ScriptableObject
 {
     public string cardName;
-    public string cardShape; // TODO: 形状の定義
-    public string attribute; // TODO: 属性の定義
-    public int basePower;
+    public Sprite icon;
+    
+    // Phase2以降で追加予定
+    // public int power;
+    // public string cardShape;
+    // public string attribute;
 }
