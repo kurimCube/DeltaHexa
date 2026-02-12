@@ -1,20 +1,54 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
-/// カードUI表示
-/// クリック処理（Managerへ通知）
+/// カード表示・選択処理（Phase1）
+/// - カード表示
+/// - 選択処理
 /// </summary>
 public class CardView : MonoBehaviour
 {
-    private CardInstance cardData;
+    private CardInstance cardInstance;
+    private CardManager cardManager;
+    private Button button;
 
-    public void Initialize(CardInstance card)
+    private Color normalColor = Color.white;
+    private Color selectedColor = Constants.SELECTED_CARD_COLOR;
+
+    public void Initialize(CardInstance card, CardManager cManager)
     {
-        cardData = card;
+        cardInstance = card;
+        cardManager = cManager;
+        button = GetComponent<Button>();
+
+        if (button != null)
+        {
+            button.onClick.AddListener(OnClicked);
+        }
     }
 
-    private void OnMouseDown()
+    private void OnClicked()
     {
-        // CardManagerへ通知
+        if (cardInstance != null && cardManager != null)
+        {
+            cardManager.SelectCard(cardInstance);
+            UpdateVisuals();
+        }
+    }
+
+    /// <summary>
+    /// 選択状態に応じた見た目更新
+    /// </summary>
+    public void UpdateVisuals()
+    {
+        if (button != null && cardManager != null)
+        {
+            bool isSelected = (cardManager.GetSelectedCard() == cardInstance);
+            Image image = button.GetComponent<Image>();
+            if (image != null)
+            {
+                image.color = isSelected ? selectedColor : normalColor;
+            }
+        }
     }
 }

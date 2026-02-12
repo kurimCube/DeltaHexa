@@ -2,39 +2,86 @@ using UnityEngine;
 using System.Collections.Generic;
 
 /// <summary>
-/// 盤面データ保持
-/// セル取得
-/// 配置可否判定
-/// 発動トリガー呼び出し
+/// 盤面管理（Phase1）
+/// - 三角グリッド生成
+/// - セル管理
+/// - 配置可否判定
+/// - セル状態更新
 /// </summary>
 public class BoardManager : MonoBehaviour
 {
     private Dictionary<Vector2Int, Cell> cells = new Dictionary<Vector2Int, Cell>();
-    private List<List<Vector2Int>> precomputedLines = new List<List<Vector2Int>>();
+    
+    [SerializeField] private GameObject cellPrefab;
+    [SerializeField] private Transform boardRoot;
 
-    private void Start()
+    public void Initialize()
     {
-        // BoardGeneratorで生成される想定
+        // 座標生成
+        List<Vector2Int> coordinates = GenerateCoordinates();
+
+        // 各座標にCellを生成
+        foreach (Vector2Int coord in coordinates)
+        {
+            Cell cell = new Cell(coord);
+            cells[coord] = cell;
+
+            // CellView生成（Prefabからインスタンス化）
+            if (cellPrefab != null && boardRoot != null)
+            {
+                GameObject cellObj = Instantiate(cellPrefab, boardRoot);
+                CellView cellView = cellObj.GetComponent<CellView>();
+                if (cellView != null)
+                {
+                    cellView.Initialize(cell, this);
+                }
+            }
+        }
     }
 
-    public bool CanPlace(Vector2Int position)
+    /// <summary>
+    /// Axial座標で制約を満たす座標を全生成
+    /// CellCoordinateUtilityを使用
+    /// </summary>
+    public List<Vector2Int> GenerateCoordinates()
     {
-        if (!cells.ContainsKey(position))
+        return CellCoordinateUtility.GenerateAllValidCoordinates();
+    }
+
+    /// <summary>
+    /// 配置可能判定
+    /// </summary>
+    public bool CanPlace(Vector2Int coord)
+    {
+        return cells.ContainsKey(coord) && !cells[coord].isOccupied;
+    }
+
+    /// <summary>
+    /// カード配置
+    /// </summary>
+    public bool PlaceCard(Vector2Int coord, CardInstance card)
+    {
+        if (!CanPlace(coord))
             return false;
 
-        return !cells[position].isOccupied;
+        cells[coord].placedCard = card;
+        cells[coord].isOccupied = true;
+        return true;
     }
 
-    public Cell GetCell(Vector2Int position)
+    /// <summary>
+    /// セル取得
+    /// </summary>
+    public Cell GetCell(Vector2Int coord)
     {
-        return cells.ContainsKey(position) ? cells[position] : null;
+        return cells.ContainsKey(coord) ? cells[coord] : null;
     }
 
-    public void PlaceCard(Vector2Int position, CardInstance card)
+    /// <summary>
+    /// 盤面のセル数確認（テスト用）
+    /// </summary>
+    public int GetCellCount()
     {
-        if (cells.ContainsKey(position))
-        {
-            cells[position].PlaceCard(card);
-        }
+        return cells.Count;
     }
 }
