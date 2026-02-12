@@ -15,16 +15,25 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private GameObject cellPrefab;
     [SerializeField] private Transform boardRoot;
 
+    /// <summary>
+    /// 仮のInit
+    /// </summary>
+    private void Start()
+    {
+        Initialize();
+    }
+
     public void Initialize()
     {
         // 座標生成
-        List<Vector2Int> coordinates = GenerateCoordinates();
+        List<TriangleCoord> coordinates = GenerateTriangleCoordinates();
 
         // 各座標にCellを生成
-        foreach (Vector2Int coord in coordinates)
+        foreach (TriangleCoord coord in coordinates)
         {
-            Cell cell = new Cell(coord);
-            cells[coord] = cell;
+            // TriangleCoord の Pos をキーにして Cell を作成・格納する
+            Cell cell = new Cell(coord.Pos);
+            cells[coord.Pos] = cell;
 
             // CellView生成（Prefabからインスタンス化）
             if (cellPrefab != null && boardRoot != null)
@@ -37,15 +46,48 @@ public class BoardManager : MonoBehaviour
                 }
             }
         }
+
+        Debug.Log("Generated Cells: " + cells.Count);
     }
 
     /// <summary>
-    /// Axial座標で制約を満たす座標を全生成
-    /// CellCoordinateUtilityを使用
+    /// 三角形座標の生成
     /// </summary>
-    public List<Vector2Int> GenerateCoordinates()
+    public List<TriangleCoord> GenerateTriangleCoordinates()
     {
-        return CellCoordinateUtility.GenerateAllValidCoordinates();
+        List<TriangleCoord> result = new List<TriangleCoord>();
+
+        int size = 2;
+
+        for (int y = -size; y < size; y++)
+        {
+            int minX = Mathf.Max(-size, -y - size);
+            int maxX = Mathf.Min(size - 1, -y + size - 1);
+
+            for (int x = minX; x <= maxX; x++)
+            {
+                bool isUp = (x + y) % 2 == 0;
+                result.Add(new TriangleCoord(x, y, isUp));
+            }
+        }
+
+        Debug.Log("Triangle count: " + result.Count);
+        return result;
+    }
+
+    /// <summary>
+    /// 三角形座標の向きと位置
+    /// </summary>
+    public struct TriangleCoord
+    {
+        public Vector2Int Pos;
+        public bool IsUp;
+
+        public TriangleCoord(int x, int y, bool isUp)
+        {
+            Pos = new Vector2Int(x, y);
+            IsUp = isUp;
+        }
     }
 
     /// <summary>

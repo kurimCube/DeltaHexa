@@ -49,11 +49,14 @@ public static class CellCoordinateUtility
     /// </summary>
     public static Vector3 CoordinateToWorldPosition(Vector2Int coord, float cellSize = 1.0f)
     {
-        // 正三角形グリッドのレイアウト変換
-        float x = cellSize * (3.0f / 2.0f) * coord.x;
-        float y = cellSize * (Mathf.Sqrt(3.0f) / 2.0f * coord.x + Mathf.Sqrt(3.0f) * coord.y);
+        // 三角格子向け変換:
+        // 基底ベクトル v1=(1,0), v2=(0.5, sqrt(3)/2) を使う線形写像
+        // world = cellSize * (coord.x * v1 + coord.y * v2)
+        float a = cellSize;
+        float x = a * (coord.x + 0.5f * coord.y);
+        float y = a * (Mathf.Sqrt(3.0f) / 2.0f * coord.y);
 
-        return new Vector3(x, y, 0);
+        return new Vector3(x, y, 0f);
     }
 
     /// <summary>
@@ -62,10 +65,14 @@ public static class CellCoordinateUtility
     /// </summary>
     public static Vector2Int WorldPositionToCoordinate(Vector3 worldPos, float cellSize = 1.0f)
     {
-        // 逆変換
-        float x = (2.0f / 3.0f) * worldPos.x / cellSize;
-        float y = (-1.0f / 3.0f) * worldPos.x / cellSize + (Mathf.Sqrt(3.0f) / 3.0f) * worldPos.y / cellSize;
+        // 上の線形写像の逆変換（近似、四捨五入で格子点へ）
+        float a = cellSize;
+        float yf = worldPos.y / (a * (Mathf.Sqrt(3.0f) / 2.0f));
+        float xf = worldPos.x / a - 0.5f * yf;
 
-        return new Vector2Int(Mathf.RoundToInt(x), Mathf.RoundToInt(y));
+        int xi = Mathf.RoundToInt(xf);
+        int yi = Mathf.RoundToInt(yf);
+
+        return new Vector2Int(xi, yi);
     }
 }
